@@ -1,14 +1,14 @@
 base:
 	docker build . -t kubox:$(@) -f $(@).dockerfile
 
-golang-%:
+golang-%: base
 	docker build . -t kubox:$(@) -f golang.dockerfile \
 		--build-arg=GO_VERSION=$(@:golang-%=%)
 
-python-%:
+python-%: base
 	docker build . -t kubox:$(@) -f python.dockerfile \
 		--build-arg=PYTHON_VERSION=$(@:python-%=%)
 
-nodejs-%:
+nodejs-%: base
 	docker build . -t kubox:$(@) -f nodejs.dockerfile \
 		--build-arg=NODEJS_VERSION=$(@:nodejs-%=%)

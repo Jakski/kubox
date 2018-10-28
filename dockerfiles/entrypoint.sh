@@ -51,18 +51,15 @@ if [ ! -d "${HOME}/.ssh" ]; then
 fi
 
 log_info "Generating server keys..."
-[ -f /etc/ssh/ssh_host_rsa_key ] \
-	|| ssh-keygen -q -t rsa -f /etc/ssh/ssh_host_rsa_key -C '' -N ''
-[ -f /etc/ssh/ssh_host_ecdsa_key ] \
-	|| ssh-keygen -q -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -C '' -N ''
-[ -f /etc/ssh/ssh_host_ed25519_key ] \
-	|| ssh-keygen -q -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -C '' -N ''
-
-#log_info "Creating privilege separation directory for OpenSSH..."
-#if [ ! -d /run/sshd ]; then
-	#mkdir /run/sshd
-	#chmod 0755 /run/sshd
-#fi
+[ -f "${KEY_DIR}/ssh_host_rsa_key" ] \
+	|| ssh-keygen -q -t rsa -f "${KEY_DIR}/ssh_host_rsa_key" -C '' -N ''
+[ -f "${KEY_DIR}/ssh_host_ecdsa_key" ] \
+	|| ssh-keygen -q -t ecdsa -f "${KEY_DIR}/ssh_host_ecdsa_key" -C '' -N ''
+[ -f "${KEY_DIR}/ssh_host_ed25519_key" ] \
+	|| ssh-keygen -q -t ed25519 -f "${KEY_DIR}/ssh_host_ed25519_key" -C '' -N ''
+for key in "${KEY_DIR}"/ssh_host_*_key; do
+	ln -sf "$key" "/etc/ssh/$(basename "$key")"
+done
 
 log_info "Starting sshd..."
 exec tini -- $(which sshd) -D -e $@

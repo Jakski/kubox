@@ -19,5 +19,9 @@ RUN chown root:root /etc/ssh/sshd_config /usr/bin/entrypoint.sh \
 
 ENV UID=1000
 ENV HOME=/home/developer
+ENV KEY_DIR=/srv/ssh
+
+VOLUME $KEY_DIR
+VOLUME $HOME
 
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]

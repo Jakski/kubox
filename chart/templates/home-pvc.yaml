@@ -1,0 +1,17 @@
+{{- if not .Values.kubox.homePvc }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "kubox.fullname" . }}-home
+  labels:
+    app.kubernetes.io/name: {{ include "kubox.name" . }}
+    helm.sh/chart: {{ include "kubox.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  resources:
+    requests:
+      storage: {{ .Values.kubox.homeSize }}
+  accessModes:
+    - ReadWriteOnce
+{{- end }}

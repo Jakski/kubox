@@ -1,0 +1,87 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "kubox.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "kubox.name" . }}
+    helm.sh/chart: {{ include "kubox.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "kubox.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "kubox.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- with .Values.security }}
+          securityContext:
+{{ toYaml . | indent 12 }}
+        {{- end }}
+        {{- with .Values.args }}
+          args:
+{{ toYaml .Values.args | indent 12 }}
+        {{- end }}
+          env:
+            - name: AUTHORIZED_KEYS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "kubox.fullname" . }}
+                  key: authorized_keys
+          {{- if .Values.kubox.password }}
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "kubox.fullname" . }}
+                  key: password
+          {{- end }}
+            - name: KEY_DIR
+              value: {{ .Values.kubox.keyDir }}
+          volumeMounts:
+            - name: ssh-keys
+              mountPath: {{ .Values.kubox.keyDir }}
+            - name: home
+              mountPath: {{ .Values.kubox.homeDir }}
+          ports:
+            - name: ssh
+              containerPort: 22
+              protocol: TCP
+          readinessProbe:
+            exec:
+              command: [ssh-keyscan, -t, rsa, 127.0.0.1]
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+      volumes:
+        - name: ssh-keys
+          emptyDir:
+            sizeLimit: 5Mi
+        - name: home
+          persistentVolumeClaim:
+          {{- if .Values.kubox.homePvc }}
+            claimName: {{ .Values.kubox.homePvc }}
+          {{- else }}
+            claimName: {{ include "kubox.fullname" . }}-home
+          {{- end }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
