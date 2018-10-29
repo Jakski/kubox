@@ -6,6 +6,7 @@ RUN apk add --no-cache \
 	neovim \
 	sudo \
 	bash \
+	rsync \
 	tini \
 	ca-certificates \
 	&& addgroup -S sudo \

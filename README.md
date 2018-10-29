@@ -31,6 +31,54 @@ $ helm install --name my-release https://someurl/kubox
 | `tolerations`          | Tolerations for pod                     | `[]`              |
 | `affinity`             | Scheduling constraints for pod          | `{}`              |
 
+## Connecting
+
+Kubox exposes system account over SSH. Assuming you deployed service with public
+IP address, you can connect to your pod like you would to virtual machine:
+
+```
+$ ssh developer@<address> -p <port>
+```
+
+## Code synchronization
+
+You can achieve continuous code synchronization with tools like
+[lsyncd](https://axkibe.github.io/lsyncd/), e.g.:
+
+```
+settings {
+        nodaemon = true,
+        delay = 1
+}
+
+sync {
+        default.rsyncssh,
+        source = 'test',
+        targetdir = 'test',
+        host = 'developer@127.0.0.1',
+        exclude = {
+                '*.tmp',
+                '*bak'
+        },
+        rsync = {
+                compress = true
+        },
+        ssh = {
+                port = 8022
+        }
+}
+```
+
+Above configuration can be used with `lsyncd` to synchronize directory `test`:
+
+```
+$ lsyncd config.lua
+```
+
+> `lsyncd` is available in
+> [Debian repositories](https://packages.debian.org/stretch/lsyncd) and
+> [Brew](https://formulae.brew.sh/formula/lsyncd).
+
 ## Using root account
 
 You must set `kubox.password` variable and use it with `sudo`:
@@ -50,6 +98,10 @@ $ helm install --name my-release https://someurl/kubox \
        --set security.capabilities.add[0]=NET_ADMIN
 ```
 
+> **Note**: Adding new capabilities to containers might be disabled by cluster
+> security policies. You can read more about it here:
+> https://kubernetes.io/docs/concepts/policy/pod-security-policy/#capabilities
+
 To block outgoing connections to port TCP 443 address 1.1.1.1, you would need to
 set rule inside container:
 
@@ -64,7 +116,3 @@ You can inspect filtering rules with:
 ```
 $ iptables -nvL
 ```
-
-> **Note**: Adding new capabilities to containers might be disabled by cluster
-> security policies. You can read more about it here:
-> https://kubernetes.io/docs/concepts/policy/pod-security-policy/#capabilities
