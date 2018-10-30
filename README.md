@@ -5,8 +5,11 @@ Kubernetes development pod.
 ## Usage
 
 ```
-$ helm install --name my-release https://github.com/Jakski/kubox/archive/master.tar.gz
+$ helm install --name my-release https://github.com/Jakski/kubox/archive/master.tar.gz \
+               --set image.tag=python-3.6
 ```
+
+Available image flavours can be found here: https://hub.docker.com/r/jakski/kubox/tags/
 
 ## Configuration
 
