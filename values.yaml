@@ -3,7 +3,7 @@ kubox:
   homeDir: /home/developer
   homeSize: 5Gi
 image:
-  repository: kubox
+  repository: jakski/kubox
   tag: base
   pullPolicy: IfNotPresent
 nameOverride: ""
