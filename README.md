@@ -5,7 +5,7 @@ Kubernetes development pod.
 ## Usage
 
 ```
-$ helm install --name my-release https://github.com/Jakski/kubox/archive/v0.1.0.tar.gz
+$ helm install --name my-release https://github.com/Jakski/kubox/archive/master.tar.gz
 ```
 
 ## Configuration
@@ -96,7 +96,7 @@ certain IP addresses. In order to use `iptables` you will have to add
 `NET_ADMIN` capability to your pod:
 
 ```
-$ helm install --name my-release https://github.com/Jakski/kubox/archive/v0.1.0.tar.gz \
+$ helm install --name my-release https://github.com/Jakski/kubox/archive/master.tar.gz \
        --set security.capabilities.add[0]=NET_ADMIN
 ```
 
