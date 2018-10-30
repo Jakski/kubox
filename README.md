@@ -10,31 +10,33 @@ $ helm install --name my-release https://someurl/kubox
 
 ## Configuration
 
-| Parameter              | Description                             | Default           |
-| ---------              | -----------                             | -------           |
-| `kubox.authorizedKeys` | Authorized keys for OpenSSH(*REQUIRED*) | Not set           |
-| `kubox.password`       | Password for developer user             | Random            |
-| `kubox.keyDir`         | Directory for OpenSSH server keys       | `/srv/ssh`        |
-| `kubox.homeDir`        | Developer home directory                | `/home/developer` |
-| `kubox.security`       | Security context for container          | `{}`              |
-| `kubox.homeSize`       | Size limit for developer home directory | `5Gi`             |
-| `image.repository`     | Image name                              | `kubox`           |
-| `image.tag`            | Image tag                               | `base`            |
-| `nameOverride`         | Override resource name prefix           | `""`              |
-| `fullnameOverride`     | Override full resource names            | `""`              |
-| `service.type`         | k8s service type                        | `ClusterIP`       |
-| `service.port`         | k8s service port                        | `22`              |
-| `args`                 | Arguments for container                 | `[]`              |
-| `env`                  | Environment variables for container     | `[]`              |
-| `resources`            | Resource constraints for container      | `{}`              |
-| `nodeSelector`         | Node selector for pod                   | `{}`              |
-| `tolerations`          | Tolerations for pod                     | `[]`              |
-| `affinity`             | Scheduling constraints for pod          | `{}`              |
+| Parameter              | Description                                             | Default           |
+| ---------              | -----------                                             | -------           |
+| `kubox.authorizedKeys` | Authorized keys for OpenSSH(*REQUIRED*)                 | Not set           |
+| `kubox.password`       | Password for developer user                             | Random            |
+| `kubox.keyDir`         | Directory for OpenSSH server keys                       | `/srv/ssh`        |
+| `kubox.homeDir`        | Developer home directory                                | `/home/developer` |
+| `kubox.security`       | Security context for container                          | `{}`              |
+| `kubox.homeSize`       | Size limit for developer home directory                 | `5Gi`             |
+| `image.repository`     | Image name                                              | `kubox`           |
+| `image.tag`            | Image tag                                               | `base`            |
+| `nameOverride`         | Override resource name prefix                           | `""`              |
+| `fullnameOverride`     | Override full resource names                            | `""`              |
+| `service.port`         | k8s service port                                        | `22`              |
+| `service.type`         | k8s service type(ignored, if `service.ip` is specified) | `ClusterIP`       |
+| `service.ip`           | IP address for k8s load balancer                        | Not set           |
+| `args`                 | Arguments for container                                 | `[]`              |
+| `env`                  | Environment variables for container                     | `[]`              |
+| `resources`            | Resource constraints for container                      | `{}`              |
+| `nodeSelector`         | Node selector for pod                                   | `{}`              |
+| `tolerations`          | Tolerations for pod                                     | `[]`              |
+| `affinity`             | Scheduling constraints for pod                          | `{}`              |
 
 ## Connecting
 
 Kubox exposes system account over SSH. Assuming you deployed service with public
-IP address, you can connect to your pod like you would to virtual machine:
+IP address(`service.ip` parameter), you can connect to your pod like you would
+to virtual machine:
 
 ```
 $ ssh developer@<address> -p <port>
